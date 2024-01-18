@@ -1,0 +1,3 @@
+editorconfig = true
+bracketSameLine = true
+experimentalTernaries = true
