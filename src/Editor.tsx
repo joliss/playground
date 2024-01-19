@@ -1,12 +1,12 @@
+import { createCodeMirror, createEditorFocus } from "solid-codemirror";
 import { highlightSpecialChars, drawSelection, dropCursor, keymap, EditorView, placeholder } from "@codemirror/view";
 import { indentOnInput, syntaxHighlighting, HighlightStyle, bracketMatching } from "@codemirror/language";
 import { history, defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import { tags } from "@lezer/highlight";
-
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
-import { onCleanup, onMount } from "solid-js";
+import { Setter, onCleanup, onMount } from "solid-js";
 import { css } from "solid-styled-components";
 
 // Create highlight style based on defaultHighlightStyle at
@@ -49,46 +49,40 @@ const highlightStyle = HighlightStyle.define([
   { tag: tags.monospace, fontFamily: "monospace !important", fontWeight: "bold", fontSize: monospaceFontSize },
 ]);
 
-export const Editor = (props: { content?: string; placeholder?: string }) => {
-  let editorElement: HTMLDivElement;
-  let editorView: EditorView;
+export const Editor = (props: { content?: string; placeholder?: string; setFocused?: Setter<boolean> }) => {
+  const { editorView, ref: editorRef, createExtension } = createCodeMirror({ value: props.content || "" });
 
-  onMount(() => {
-    editorView = new EditorView({
-      doc: props.content || "",
-      // See
-      // https://github.com/codemirror/basic-setup/blob/main/src/codemirror.ts
-      // for a list of basic extensions
-      extensions: [
-        highlightSpecialChars(),
-        history(),
-        drawSelection(),
-        dropCursor(),
-        // EditorState.allowMultipleSelections.of(true),
-        // rectangularSelection(),
-        // crosshairCursor(),
-        indentOnInput(),
-        syntaxHighlighting(highlightStyle, { fallback: true }),
-        bracketMatching(),
-        closeBrackets(),
-        keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap]),
-        markdown({
-          base: markdownLanguage,
-          codeLanguages: languages,
-        }),
-        placeholder(props.placeholder || ""),
-        EditorView.lineWrapping,
-      ],
-      parent: editorElement,
-    });
-  });
+  // See
+  // https://github.com/codemirror/basic-setup/blob/main/src/codemirror.ts
+  // for a list of basic extensions
+  createExtension([
+    highlightSpecialChars(),
+    history(),
+    drawSelection(),
+    dropCursor(),
+    // EditorState.allowMultipleSelections.of(true),
+    // rectangularSelection(),
+    // crosshairCursor(),
+    indentOnInput(),
+    syntaxHighlighting(highlightStyle, { fallback: true }),
+    bracketMatching(),
+    closeBrackets(),
+    keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap]),
+    markdown({
+      base: markdownLanguage,
+      codeLanguages: languages,
+    }),
+    placeholder(props.placeholder || ""),
+    EditorView.lineWrapping,
+  ]);
 
-  onCleanup(() => {
-    editorView.destroy();
+  createEditorFocus(editorView, (focused) => {
+    props.setFocused?.(focused);
   });
 
   let style = css`
     & .cm-editor {
+      padding: 2px;
       border-radius: 8px;
       font-size: ${monospaceFontSize};
 
@@ -113,5 +107,5 @@ export const Editor = (props: { content?: string; placeholder?: string }) => {
     }
   `;
 
-  return <div ref={editorElement!} class={`${style} [&_.cm-placeholder]:font-sans text-gray-800`}></div>;
+  return <div ref={editorRef!} class={`${style} [&_.cm-placeholder]:font-sans text-gray-800`}></div>;
 };

@@ -1,4 +1,4 @@
-import { onMount, type Component, type JSX, onCleanup } from "solid-js";
+import { onMount, type Component, type JSX, onCleanup, createSignal, createEffect } from "solid-js";
 import { basicSetup } from "codemirror";
 import { sampleMessage } from "./sample-message";
 
@@ -16,12 +16,15 @@ const Message: Component<MessageProps> = (props) => {
     role === "system" ? "Enter a system message here."
     : role === "user" ? "Enter a user message here."
     : "Enter an assistant message here.";
+  let [focused, setFocused] = createSignal(false);
 
   return (
-    <div class="flex *:item-start py-4">
-      <div class="flex-initial min-w-20 uppercase text-xs font-bold text-gray-800 leading-4 py-[8px]">{role}</div>
+    <div
+      class="flex *:item-start px-4 py-3 hover:bg-gray-50"
+      classList={{ "bg-gray-50 [&_.cm-editor]:bg-white": focused() }}>
+      <div class="flex-initial min-w-20 uppercase text-xs font-bold text-gray-800 leading-4 py-[10px]">{role}</div>
       <div class="flex-grow">
-        <Editor content={props.content} placeholder={placeholder} />
+        <Editor content={props.content} placeholder={placeholder} setFocused={setFocused} />
       </div>
     </div>
   );
@@ -37,8 +40,8 @@ const App: Component = () => {
   });
 
   return (
-    <main class={`${styles.fullscreen} flex flex-col *:px-4 *:item-start`}>
-      <h1 class="text-2xl py-2 font-bold border border-b-gray-100 text-gray-800">Playground</h1>
+    <main class={`${styles.fullscreen} flex flex-col *:item-start`}>
+      <h1 class="text-2xl px-4 py-2 font-bold border border-b-gray-100 text-gray-800">Playground</h1>
       <div class="grow overflow-auto *:border-b [&>:not(:last-child)]:border-gray-200" ref={messageListElement!}>
         <Message messageRole="system" />
         <Message
