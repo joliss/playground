@@ -1,18 +1,7 @@
-import {
-  highlightSpecialChars,
-  drawSelection,
-  dropCursor,
-  rectangularSelection,
-  crosshairCursor,
-  keymap,
-  EditorView,
-  placeholder,
-} from "@codemirror/view";
-import { EditorState } from "@codemirror/state";
+import { highlightSpecialChars, drawSelection, dropCursor, keymap, EditorView, placeholder } from "@codemirror/view";
 import { indentOnInput, syntaxHighlighting, HighlightStyle, bracketMatching } from "@codemirror/language";
-import { history, defaultKeymap, historyKeymap, indentWithTab } from "@codemirror/commands";
+import { history, defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
-// import { lintKeymap } from "@codemirror/lint";
 import { tags } from "@lezer/highlight";
 
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
@@ -75,14 +64,14 @@ export const Editor = (props: { content?: string; placeholder?: string }) => {
         history(),
         drawSelection(),
         dropCursor(),
-        EditorState.allowMultipleSelections.of(true),
+        // EditorState.allowMultipleSelections.of(true),
+        // rectangularSelection(),
+        // crosshairCursor(),
         indentOnInput(),
         syntaxHighlighting(highlightStyle, { fallback: true }),
         bracketMatching(),
         closeBrackets(),
-        rectangularSelection(),
-        crosshairCursor(),
-        keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
+        keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap]),
         markdown({
           base: markdownLanguage,
           codeLanguages: languages,
