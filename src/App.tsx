@@ -1,6 +1,11 @@
 import { onMount, type Component, type JSX, onCleanup, createSignal, createEffect } from "solid-js";
 import { sampleMessage } from "./sample-message";
 import "@shoelace-style/shoelace/dist/components/icon/icon";
+import "@shoelace-style/shoelace/dist/components/dropdown/dropdown";
+import "@shoelace-style/shoelace/dist/components/button/button";
+import "@shoelace-style/shoelace/dist/components/menu/menu";
+import "@shoelace-style/shoelace/dist/components/menu-item/menu-item";
+import "@shoelace-style/shoelace/dist/components/dialog/dialog";
 import "@shoelace-style/shoelace/dist/themes/light.css";
 
 import "./solid-support";
@@ -42,23 +47,35 @@ const App: Component = () => {
   });
 
   return (
-    <main class={`${styles.fullscreen} flex flex-col *:item-start`}>
-      <div class="flex flex-row border-b border-gray-100">
-        <h1 class="text-2xl px-4 py-2 font-bold text-gray-800">Playground</h1>
-        <div class="flex-grow"></div>
-        <div class="my-auto">
-          <sl-icon class="p-3" prop:name="gear" prop:label="Settings"></sl-icon>
+    <>
+      <main class={`${styles.fullscreen} flex flex-col *:item-start`}>
+        <div class="flex flex-row border-b border-gray-100">
+          <h1 class="text-2xl my-auto px-4 font-bold text-gray-800">Playground</h1>
+          <div class="flex-grow"></div>
+          <div class="my-auto">
+            <sl-dropdown class="m-1 *:w-40">
+              <sl-button slot="trigger" prop:size="medium" prop:caret={true}>
+                <sl-icon prop:name="list"></sl-icon> Menu
+              </sl-button>
+              <sl-menu>
+                <sl-menu-item>
+                  Settings
+                  <sl-icon slot="prefix" prop:name="gear"></sl-icon>
+                </sl-menu-item>
+              </sl-menu>
+            </sl-dropdown>
+          </div>
         </div>
-      </div>
-      <div class="grow overflow-auto *:border-b [&>:not(:last-child)]:border-gray-200" ref={messageListElement!}>
-        <Message messageRole="system" />
-        <Message
-          messageRole="user"
-          content="In Solid.js can I retrieve the root element in onMount? Or do I need to put a ref?"
-        />
-        <Message messageRole="assistant" content={sampleMessage} />
-      </div>
-    </main>
+        <div class="grow overflow-auto *:border-b [&>:not(:last-child)]:border-gray-200" ref={messageListElement!}>
+          <Message messageRole="system" />
+          <Message
+            messageRole="user"
+            content="In Solid.js can I retrieve the root element in onMount? Or do I need to put a ref?"
+          />
+          <Message messageRole="assistant" content={sampleMessage} />
+        </div>
+      </main>
+    </>
   );
 };
 
