@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
 // import devtools from 'solid-devtools/vite';
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
   plugins: [
@@ -10,6 +11,14 @@ export default defineConfig({
     */
     // devtools(),
     solidPlugin(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: "node_modules/@shoelace-style/shoelace/dist/assets/icons/*.svg",
+          dest: "shoelace/assets/icons",
+        },
+      ],
+    }),
   ],
   server: {
     port: 3000,

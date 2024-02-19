@@ -1,7 +1,9 @@
 import { onMount, type Component, type JSX, onCleanup, createSignal, createEffect } from "solid-js";
-import { basicSetup } from "codemirror";
 import { sampleMessage } from "./sample-message";
+import "@shoelace-style/shoelace/dist/components/icon/icon";
+import "@shoelace-style/shoelace/dist/themes/light.css";
 
+import "./solid-support";
 import * as styles from "./App.styles";
 import { Editor } from "./Editor";
 
@@ -41,7 +43,13 @@ const App: Component = () => {
 
   return (
     <main class={`${styles.fullscreen} flex flex-col *:item-start`}>
-      <h1 class="text-2xl px-4 py-2 font-bold border border-b-gray-100 text-gray-800">Playground</h1>
+      <div class="flex flex-row border-b border-gray-100">
+        <h1 class="text-2xl px-4 py-2 font-bold text-gray-800">Playground</h1>
+        <div class="flex-grow"></div>
+        <div class="my-auto">
+          <sl-icon class="p-3" prop:name="gear" prop:label="Settings"></sl-icon>
+        </div>
+      </div>
       <div class="grow overflow-auto *:border-b [&>:not(:last-child)]:border-gray-200" ref={messageListElement!}>
         <Message messageRole="system" />
         <Message

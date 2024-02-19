@@ -11,6 +11,6 @@
     "types": ["vite/client"],
     "noEmit": true,
     "isolatedModules": true,
-    "lib": ["DOM", "ESNext"]
+    "lib": ["ESNext", "Dom"]
   }
 }
