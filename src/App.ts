@@ -2,15 +2,17 @@ import "@shoelace-style/shoelace/dist/components/button/button";
 import "@shoelace-style/shoelace/dist/components/dialog/dialog";
 import "@shoelace-style/shoelace/dist/components/dropdown/dropdown";
 import "@shoelace-style/shoelace/dist/components/icon/icon";
+import "@shoelace-style/shoelace/dist/components/input/input";
 import "@shoelace-style/shoelace/dist/components/menu-item/menu-item";
 import "@shoelace-style/shoelace/dist/components/menu/menu";
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
-import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { Ref, createRef, ref } from "lit/directives/ref.js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 import "./Editor";
 import { sampleMessage } from "./sample-message";
+import "./SettingsDialog";
+import { type SettingsDialog } from "./SettingsDialog";
 
 setBasePath("/shoelace");
 
@@ -86,12 +88,13 @@ export class Message extends LitElement {
 
 @customElement("pg-app")
 class App extends LitElement {
-  messageListRef: Ref<HTMLDivElement> = createRef();
+  @query(".message-list") messageList!: HTMLDivElement;
+  @query("pg-settings-dialog") settingsDialog!: SettingsDialog;
 
   connectedCallback(): void {
     super.connectedCallback();
     setTimeout(() => {
-      // this.messageListRef.value.scrollTop = this.messageListRef.value.scrollHeight;
+      // this.messageList.scrollTop = this.messageList.scrollHeight;
     });
   }
 
@@ -160,6 +163,7 @@ class App extends LitElement {
 
   render() {
     return html`
+      <pg-settings-dialog></pg-settings-dialog>
       <div class="container">
         <header>
           <h1>Playground</h1>
@@ -168,7 +172,7 @@ class App extends LitElement {
             <sl-dropdown>
               <sl-button slot="trigger" size="medium" caret> <sl-icon name="list"></sl-icon> Menu </sl-button>
               <sl-menu>
-                <sl-menu-item>
+                <sl-menu-item @click=${() => this.settingsDialog.show()}>
                   Settings
                   <sl-icon slot="prefix" name="gear"></sl-icon>
                 </sl-menu-item>
@@ -177,7 +181,7 @@ class App extends LitElement {
           </div>
         </header>
         <main>
-          <div ${ref(this.messageListRef)} class="message-list">
+          <div class="message-list">
             <pg-message messageRole="system"></pg-message>
             <pg-message
               messageRole="user"
