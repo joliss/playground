@@ -97,14 +97,6 @@ export class Editor extends LitElement {
       display: block;
     }
 
-    .editor-container {
-      /* &:focus-within .cm-editor {
-      }
-      :host:not(:focus-within) .cm-editor {
-        cursor: pointer;
-      } */
-    }
-
     .editor-container,
     .cm-editor {
       /* .cm-editor needs border-radius for outline; .editor-container needs
@@ -117,9 +109,6 @@ export class Editor extends LitElement {
       color: #333;
       font-size: ${css`monospaceFontSize`};
 
-      .editor-container:not(:focus-within) & {
-        cursor: pointer;
-      }
       .editor-container:focus-within & {
         outline: 1px solid #14b8a6 !important;
       }
@@ -136,6 +125,10 @@ export class Editor extends LitElement {
     }
     .cm-cursor {
       height: 19px !important;
+    }
+
+    .cm-selectionBackground {
+      background-color: highlight !important;
     }
   `;
 
