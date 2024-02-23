@@ -29,6 +29,9 @@ dependencies:
   '@lezer/highlight':
     specifier: ^1.2.0
     version: 1.2.0
+  '@lit/context':
+    specifier: ^1.1.0
+    version: 1.1.0
   '@shoelace-style/shoelace':
     specifier: ^2.14.0
     version: 2.14.0(@types/react@18.2.57)
@@ -41,6 +44,9 @@ dependencies:
   codemirror:
     specifier: ^6.0.1
     version: 6.0.1(@lezer/common@1.2.1)
+  dexie:
+    specifier: ^4.0.1-beta.11
+    version: 4.0.1-beta.11
   lit:
     specifier: ^3.1.2
     version: 3.1.2
@@ -767,6 +773,12 @@ packages:
     resolution: {integrity: sha512-yWJKmpGE6lUURKAaIltoPIE/wrbY3TEkqQt+X0m+7fQNnAv0keydnYvbiJFP1PnMhizmIWRWOG5KLhYyc/xl+g==}
     dev: false
 
+  /@lit/context@1.1.0:
+    resolution: {integrity: sha512-fCyv4dsH05wCNm3AKbB+PdYbXGJd/XT8OOwo4hVmD4COq5wOWJlQreGAMDvmHZ7osqxuu06Y4nmP6ooXpN7ErA==}
+    dependencies:
+      '@lit/reactive-element': 2.0.4
+    dev: false
+
   /@lit/react@1.0.3(@types/react@18.2.57):
     resolution: {integrity: sha512-RGoPMrAPbFjQFXFbfmYdotw000DyChehTim+d562HRXvFGw//KxouI8jNOcc3Kw/1uqUA1SJqXFtKKxK0NUrww==}
     peerDependencies:
@@ -1132,6 +1144,10 @@ packages:
 
   /csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
+    dev: false
+
+  /dexie@4.0.1-beta.11:
+    resolution: {integrity: sha512-7Cb1EpH2KgUEV6x6ZLuUuUUvN/yD+bU7QCVpZtf/cOUf1BTp+axRb1vrQmmFj5gf7JFriGOe36PLymzAfdTESA==}
     dev: false
 
   /didyoumean@1.2.2:

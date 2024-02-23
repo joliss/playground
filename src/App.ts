@@ -1,3 +1,4 @@
+import { provide } from "@lit/context";
 import "@shoelace-style/shoelace/dist/components/button/button";
 import "@shoelace-style/shoelace/dist/components/dialog/dialog";
 import "@shoelace-style/shoelace/dist/components/dropdown/dropdown";
@@ -11,6 +12,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import "./Editor";
 import { sampleMessage } from "./sample-message";
+import { Settings, settingsContext } from "./settings";
 import "./SettingsDialog";
 import { type SettingsDialog } from "./SettingsDialog";
 
@@ -90,6 +92,9 @@ export class Message extends LitElement {
 class App extends LitElement {
   @query(".message-list") messageList!: HTMLDivElement;
   @query("pg-settings-dialog") settingsDialog!: SettingsDialog;
+
+  @provide({ context: settingsContext })
+  settings = new Settings();
 
   connectedCallback(): void {
     super.connectedCallback();
