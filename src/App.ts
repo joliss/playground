@@ -9,7 +9,9 @@ import "@shoelace-style/shoelace/dist/components/menu/menu";
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators.js";
+import { customElement, query } from "lit/decorators.js";
+import "./chat-interface";
+import { Conversation, Message } from "./conversation";
 import "./Editor";
 import { sampleMessage } from "./sample-message";
 import { Settings, settingsContext } from "./settings";
@@ -18,90 +20,12 @@ import { type SettingsDialog } from "./SettingsDialog";
 
 setBasePath("/shoelace");
 
-@customElement("pg-message")
-export class Message extends LitElement {
-  @property({ type: String })
-  messageRole = "assistant";
-
-  @property({ type: String })
-  content = "";
-
-  static styles = css`
-    :host {
-      display: block;
-    }
-
-    .message-container {
-      display: flex;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
-
-      & > * {
-        align-items: stretch;
-      }
-
-      &:hover {
-        background-color: #eee;
-      }
-
-      &:focus-within {
-        background-color: #eee;
-        ::part(editor-container) {
-          background-color: #fff;
-        }
-      }
-    }
-
-    .message-role {
-      display: flex;
-      flex: 0 1 auto;
-      min-width: 5rem;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      font-weight: bold;
-      color: #333;
-      line-height: 1rem;
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-
-    .message-content {
-      flex-grow: 1;
-    }
-  `;
-
-  render() {
-    let placeholder =
-      this.messageRole === "system" ? "Enter a system message here."
-      : this.messageRole === "user" ? "Enter a user message here."
-      : "Enter an assistant message here.";
-    return html`
-      <div class="message-container">
-        <div class="message-role">${this.messageRole}</div>
-        <div class="message-content">
-          <pg-editor content=${this.content} placeholder=${placeholder}></pg-editor>
-        </div>
-      </div>
-    `;
-  }
-}
-
 @customElement("pg-app")
-class App extends LitElement {
-  @query(".message-list") messageList!: HTMLDivElement;
+class AppElement extends LitElement {
   @query("pg-settings-dialog") settingsDialog!: SettingsDialog;
 
   @provide({ context: settingsContext })
   settings = new Settings();
-
-  connectedCallback(): void {
-    super.connectedCallback();
-    setTimeout(() => {
-      // this.messageList.scrollTop = this.messageList.scrollHeight;
-    });
-  }
 
   static styles = css`
     :host {
@@ -151,22 +75,17 @@ class App extends LitElement {
 
     main {
       flex-grow: 1;
-      /* Stop children from expanding the flex item's height past its maximum.
-      https://stackoverflow.com/a/43809765/525872 */
       min-height: 0;
-    }
-
-    .message-list {
-      height: 100%;
-      overflow: auto;
-
-      & > *:not(:last-child) {
-        border-bottom: 1px solid #ddd;
-      }
     }
   `;
 
   render() {
+    let sampleConversation = new Conversation([
+      new Message("system", ""),
+      new Message("user", "In Solid.js can I retrieve the root element in onMount? Or do I need to put a ref?"),
+      new Message("assistant", sampleMessage),
+    ]);
+
     return html`
       <pg-settings-dialog></pg-settings-dialog>
       <div class="container">
@@ -186,17 +105,11 @@ class App extends LitElement {
           </div>
         </header>
         <main>
-          <div class="message-list">
-            <pg-message messageRole="system"></pg-message>
-            <pg-message
-              messageRole="user"
-              content="In Solid.js can I retrieve the root element in onMount? Or do I need to put a ref?"></pg-message>
-            <pg-message messageRole="assistant" content=${sampleMessage}></pg-message>
-          </div>
+          <pg-chat-interface .conversation=${sampleConversation}></pg-chat-interface>
         </main>
       </div>
     `;
   }
 }
 
-export default App;
+export default AppElement;

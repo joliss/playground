@@ -49,8 +49,8 @@ const highlightStyle = HighlightStyle.define([
 ]);
 
 @customElement("pg-editor")
-export class Editor extends LitElement {
-  @property({ type: String }) content?: string;
+export class EditorElement extends LitElement {
+  @property({ type: String, attribute: false }) content?: string;
   @property({ type: String }) placeholder?: string;
   @property({ type: Boolean }) focused = false;
 
@@ -61,6 +61,7 @@ export class Editor extends LitElement {
     if (!this.editorRef.value) {
       throw new Error("editorRef not available.");
     }
+    let focused = this.focused;
     this.editorView = new EditorView({
       doc: this.content || "",
       extensions: [
@@ -90,6 +91,9 @@ export class Editor extends LitElement {
       ],
       parent: this.editorRef.value!,
     });
+    if (focused) {
+      this.editorView.focus();
+    }
   }
 
   static styles = css`
