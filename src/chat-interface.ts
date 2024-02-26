@@ -3,6 +3,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import type { EditorElement } from "./Editor";
 import type { Conversation } from "./conversation";
+import { sampleMessage } from "./sample-message";
 
 @customElement("pg-message")
 export class MessageElement extends LitElement {
@@ -26,15 +27,17 @@ export class MessageElement extends LitElement {
 
   static styles = css`
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      max-height: 100%;
     }
 
     .message-container {
       display: flex;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
+      flex-direction: row;
+      --message-container-padding: 0.75rem;
+      padding: var(--message-container-padding) 1rem;
+      max-height: calc(100% - var(--message-container-padding) * 2);
 
       & > * {
         align-items: stretch;
@@ -42,14 +45,13 @@ export class MessageElement extends LitElement {
 
       &:focus-within {
         background-color: #eee;
-        ::part(editor-container) {
+        ::part(editor-root) {
           background-color: #fff;
         }
       }
     }
 
     .message-role {
-      display: flex;
       flex: 0 1 auto;
       min-width: 5rem;
       text-transform: uppercase;
@@ -63,6 +65,15 @@ export class MessageElement extends LitElement {
 
     .message-content {
       flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      max-height: 100%;
+    }
+
+    pg-editor {
+      display: flex;
+      flex-direction: column;
+      max-height: 100%;
     }
   `;
 
@@ -80,6 +91,8 @@ export class MessageElement extends LitElement {
         <div class="message-role">${this.messageRole}</div>
         <div class="message-content">
           <pg-editor
+            part="pg-editor"
+            exportparts="editor-root"
             .content=${this.content}
             placeholder=${this.placeholder ?? this.getPlaceholder()}
             ?focused=${this.focused}></pg-editor>
@@ -95,8 +108,22 @@ export class ChatInputElement extends LitElement {
     super.connectedCallback();
   }
 
+  static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      max-height: 100%;
+    }
+  `;
+
   render() {
-    return html`<pg-message messageRole="user" placeholder="Message the assistant..." focused></pg-message>`;
+    return html`<pg-message
+      part="message"
+      exportparts="editor-root"
+      messageRole="user"
+      placeholder="Message the assistant..."
+      .content=${sampleMessage}
+      focused></pg-message>`;
   }
 }
 
@@ -134,9 +161,10 @@ export class ChatInterfaceElement extends LitElement {
 
   static styles = css`
     :host {
+      display: block;
+      height: 100%;
       display: flex;
       flex-direction: column;
-      height: 100%;
     }
 
     .scroller {
@@ -149,14 +177,27 @@ export class ChatInterfaceElement extends LitElement {
     }
 
     main {
-      flex-grow: 1;
       /* Stop children from expanding the flex item's height past its maximum.
       https://stackoverflow.com/a/43809765/525872 */
       min-height: 0;
     }
 
+    .spacer {
+      flex-grow: 1;
+    }
+
     footer {
+      max-height: max(calc(100% - 150px), 150px);
+      /* We set flex here and on its descendants all the way to the editor so we
+      can dynamically size based on the editor's content height, while still
+      enforcing a max-height. */
+      display: flex;
+      flex-direction: column;
       border-top: 1px solid #eee;
+
+      ::part(editor-root) {
+        height: 100%;
+      }
     }
   `;
 
@@ -167,6 +208,7 @@ export class ChatInterfaceElement extends LitElement {
           <pg-message-list .conversation=${this.conversation}></pg-message-list>
         </div>
       </main>
+      <div class="spacer"></div>
       <footer>
         <pg-chat-input></pg-chat-input>
       </footer>

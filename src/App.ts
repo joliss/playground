@@ -43,7 +43,7 @@ class AppElement extends LitElement {
     header {
       display: flex;
       flex-direction: row;
-      border-bottom: 1px solid #eee;
+      background-color: rgb(0, 0, 0, 0.05);
 
       & > * {
         margin-top: auto;
@@ -51,7 +51,7 @@ class AppElement extends LitElement {
       }
 
       h1 {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         margin-top: auto;
         margin-bottom: auto;
         padding-left: 1rem;
@@ -65,7 +65,7 @@ class AppElement extends LitElement {
       }
 
       sl-dropdown {
-        margin: 0.5rem;
+        margin: 0.25rem 0.5rem;
 
         & > * {
           width: 160px;
@@ -94,7 +94,7 @@ class AppElement extends LitElement {
           <div class="spacer"></div>
           <div>
             <sl-dropdown>
-              <sl-button slot="trigger" size="medium" caret> <sl-icon name="list"></sl-icon> Menu </sl-button>
+              <sl-button slot="trigger" size="small" caret> <sl-icon name="list"></sl-icon> Menu </sl-button>
               <sl-menu>
                 <sl-menu-item @click=${() => this.settingsDialog.show()}>
                   Settings

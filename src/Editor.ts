@@ -101,9 +101,9 @@ export class EditorElement extends LitElement {
       display: block;
     }
 
-    .editor-container,
+    .editor-root,
     .cm-editor {
-      /* .cm-editor needs border-radius for outline; .editor-container needs
+      /* .cm-editor needs border-radius for outline; .editor-root needs
       border-radius for background color. */
       border-radius: 8px;
     }
@@ -112,9 +112,31 @@ export class EditorElement extends LitElement {
       padding: 2px;
       color: #333;
       font-size: ${css`monospaceFontSize`};
+      max-height: 100%;
 
-      .editor-container:focus-within & {
-        outline: 1px solid #14b8a6 !important;
+      .editor-root:focus-within & {
+        outline: 1px solid #999 !important;
+      }
+    }
+
+    .cm-placeholder {
+      /* Stops the editor height from changing slightly when you start typing
+      into an empty editor. */
+      vertical-align: baseline !important;
+    }
+
+    .cm-scroller {
+      overflow-y: auto;
+      /* Set fixed line-height because we intermingle different font sizes. */
+      line-height: 24px !important;
+
+      &::-webkit-scrollbar {
+        appearance: none;
+        width: 7px;
+      }
+      &::-webkit-scrollbar-thumb {
+        border-radius: 9999px;
+        background-color: rgba(0, 0, 0, 0.15);
       }
     }
 
@@ -123,12 +145,10 @@ export class EditorElement extends LitElement {
       font-size: ${unsafeCSS(sansSerifFontSize)};
     }
 
-    /* Set fixed heights because we intermingle different fonts. */
-    .cm-scroller {
-      line-height: 24px;
-    }
     .cm-cursor {
-      height: 19px !important;
+      --cursor-width: 1.7px;
+      border-left: var(--cursor-width) solid rgb(0, 0, 0, 0.8) !important;
+      margin-left: calc(-0.5 * var(--cursor-width)) !important;
     }
 
     .cm-selectionBackground {
@@ -137,6 +157,6 @@ export class EditorElement extends LitElement {
   `;
 
   render() {
-    return html`<div ${ref(this.editorRef)} class="editor-container" part="editor-container"></div>`;
+    return html`<div ${ref(this.editorRef)} class="editor-root" part="editor-root"></div>`;
   }
 }
