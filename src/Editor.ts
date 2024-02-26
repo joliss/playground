@@ -1,4 +1,4 @@
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import { closeBrackets } from "@codemirror/autocomplete";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { HighlightStyle, bracketMatching, indentOnInput, syntaxHighlighting } from "@codemirror/language";
@@ -14,14 +14,25 @@ import { Ref, createRef, ref } from "lit/directives/ref.js";
 // with sans serif font. See also
 // https://github.com/lezer-parser/markdown/blob/cf927e8142398d41b1c122e8a2827cd6e9e39eed/src/markdown.ts#L1880-L1903
 // for the tags used by the markdown parser.
-const monospaceFontSize = "14px";
 const sansSerifFontFamily =
   'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
 const sansSerifFontSize = "16px";
+const sansSerifLineHeight = "24px";
 const sansSerif = {
   fontFamily: sansSerifFontFamily,
   fontSize: sansSerifFontSize,
+  lineHeight: sansSerifLineHeight,
 };
+const monospaceFontSize = "14px";
+// The monospace line-height must be a few pixels less than the sans-serif
+// line-height. This is to avoid its virtual area extending past the sans-serif
+// virtual area, causing the line-height to grow by 1-2 pixels when you mix
+// fonts. See
+// https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align
+// figure 11 for a visual explanation:
+// https://iamvdo.me/content/01-blog/30-css-avance-metriques-des-fontes-line-height-et-vertical-align/vertical-align-baseline-nok.png
+// But don't set this too low or the cursor becomes too short.
+const monospaceLineHeight = "18px";
 const highlightStyle = HighlightStyle.define([
   { tag: tags.meta, color: "#404740" },
   { tag: tags.link, textDecoration: "underline", ...sansSerif },
@@ -43,9 +54,15 @@ const highlightStyle = HighlightStyle.define([
   { tag: /*@__PURE__*/ tags.definition(tags.propertyName), color: "#00c" },
   { tag: tags.comment, color: "#940" },
   { tag: tags.invalid, color: "#f00" },
-
   { tag: tags.content, ...sansSerif },
-  { tag: tags.monospace, fontFamily: "monospace !important", fontWeight: "bold", fontSize: monospaceFontSize },
+  /* tags.monospace is for `inline code`, whereas ```code blocks``` are simply untagged */
+  {
+    tag: tags.monospace,
+    fontFamily: "monospace !important",
+    fontWeight: "bold",
+    fontSize: monospaceFontSize,
+    lineHeight: monospaceLineHeight,
+  },
 ]);
 
 @customElement("pg-editor")
@@ -77,7 +94,7 @@ export class EditorElement extends LitElement {
         syntaxHighlighting(highlightStyle, { fallback: true }),
         bracketMatching(),
         closeBrackets(),
-        keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap]),
+        keymap.of([...historyKeymap, ...defaultKeymap]),
         markdown({
           base: markdownLanguage,
           codeLanguages: languages,
@@ -111,7 +128,6 @@ export class EditorElement extends LitElement {
     .cm-editor {
       padding: 2px;
       color: #333;
-      font-size: ${css`monospaceFontSize`};
       max-height: 100%;
 
       .editor-root:focus-within & {
@@ -119,16 +135,8 @@ export class EditorElement extends LitElement {
       }
     }
 
-    .cm-placeholder {
-      /* Stops the editor height from changing slightly when you start typing
-      into an empty editor. */
-      vertical-align: baseline !important;
-    }
-
     .cm-scroller {
       overflow-y: auto;
-      /* Set fixed line-height because we intermingle different font sizes. */
-      line-height: 24px !important;
 
       &::-webkit-scrollbar {
         appearance: none;
@@ -140,11 +148,6 @@ export class EditorElement extends LitElement {
       }
     }
 
-    .cm-placeholder {
-      font-family: ${unsafeCSS(sansSerifFontFamily)};
-      font-size: ${unsafeCSS(sansSerifFontSize)};
-    }
-
     .cm-cursor {
       --cursor-width: 1.7px;
       border-left: var(--cursor-width) solid rgb(0, 0, 0, 0.8) !important;
@@ -153,6 +156,36 @@ export class EditorElement extends LitElement {
 
     .cm-selectionBackground {
       background-color: highlight !important;
+    }
+
+    /* ## Font size and line height */
+
+    /* Note: Also see the HighlightStyle code above for font configuration. */
+
+    .cm-editor {
+      /* This default font-size set by the .cm-editor parent applies to Markdown
+      code blocks, which are untagged. */
+      font-size: ${unsafeCSS(monospaceFontSize)};
+      line-height: ${unsafeCSS(monospaceLineHeight)};
+    }
+
+    .cm-placeholder {
+      font-family: ${unsafeCSS(sansSerifFontFamily)};
+      font-size: ${unsafeCSS(sansSerifFontSize)};
+      line-height: ${unsafeCSS(sansSerifLineHeight)};
+      /* The vertical-align should perhaps be upstreamed. */
+      vertical-align: baseline !important;
+    }
+
+    /* Empty .cm-lines get their line-height from the default
+    monospaceLineHeight, which is too small. This causes the line to expand when
+    you enter the first character. So we use ::before as a strut to ensure every
+    line is at least sansSerifLineHeight high, even when empty. */
+    .cm-line::before {
+      font-family: ${unsafeCSS(sansSerifFontFamily)};
+      font-size: ${unsafeCSS(sansSerifFontSize)};
+      line-height: ${unsafeCSS(sansSerifLineHeight)};
+      content: "";
     }
   `;
 

@@ -3,7 +3,6 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import type { EditorElement } from "./Editor";
 import type { Conversation } from "./conversation";
-import { sampleMessage } from "./sample-message";
 
 @customElement("pg-message")
 export class MessageElement extends LitElement {
@@ -104,10 +103,6 @@ export class MessageElement extends LitElement {
 
 @customElement("pg-chat-input")
 export class ChatInputElement extends LitElement {
-  connectedCallback(): void {
-    super.connectedCallback();
-  }
-
   static styles = css`
     :host {
       display: flex;
@@ -122,7 +117,7 @@ export class ChatInputElement extends LitElement {
       exportparts="editor-root"
       messageRole="user"
       placeholder="Message the assistant..."
-      .content=${sampleMessage}
+      .content=${""}
       focused></pg-message>`;
   }
 }
