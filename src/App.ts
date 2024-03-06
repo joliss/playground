@@ -27,6 +27,17 @@ class AppElement extends LitElement {
   @provide({ context: settingsContext })
   settings = new Settings();
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    let fragmentString = window.location.hash.slice(1);
+    if (fragmentString) {
+      let fragment = new URLSearchParams(fragmentString);
+      for (let [key, value] of fragment) {
+        console.log(key, value);
+      }
+    }
+  }
+
   static styles = css`
     :host {
       display: block;
